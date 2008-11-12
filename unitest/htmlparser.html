@@ -1,0 +1,68 @@
+<html>
+<head>
+	<title>unittest for htmlparser</title>
+	<script src="jsunittest/jsunittest.js" type="text/javascript"></script>
+	<script src="htmlparser.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="jsunittest/unittest.css" type="text/css" /> 
+</head>
+<body>
+	<div id="testlog"></div>
+</body>
+</html>
+<script>
+function html_extractor_log(message) {
+    if (!html_extractor_log.window_ || html_extractor_log.window_.closed) {
+        var win = window.open("", null, "width=400,height=200," +
+                              "scrollbars=yes,resizable=yes,status=no," +
+                              "location=no,menubar=no,toolbar=no");
+        if (!win) return;
+        var doc = win.document;
+        doc.write("<html><head><title>Debug Log</title></head>" +
+                  "<body></body></html>");
+        doc.close();
+        html_extractor_log.window_ = win;
+    }
+    var logLine = html_extractor_log.window_.document.createElement("div");
+    logLine.appendChild(html_extractor_log.window_.document.createTextNode(message));
+    html_extractor_log.window_.document.body.appendChild(logLine);
+}
+</script>
+<script type="text/javascript">
+  new Test.Unit.Runner({
+
+	setup: function() {
+
+	},
+	
+	teardown: function() {
+	},
+	
+	testMatch: function() { with(this) {
+
+
+
+		var handler ={
+			start_tags: 0,
+			end_tags: 0,
+	   	    start: function(tag, attrs, unary) {html_extractor_log("start:" + tag + unary);this.start_tags++;},
+		    end: function(tag) {this.end_tags++;html_extractor_log("end" + tag)},
+		    chars: function(text) {},
+		    comment: function(text) {},
+			reset: function(){this.start_tags = 0; this.end_tags = 0;}
+		};
+  	    HTMLParser("<div>aa</div>", handler);
+		assertEqual(1, handler.start_tags);
+		assertEqual(1, handler.end_tags);
+
+		handler.reset();
+  	    HTMLParser("<div><div>aa</div>", handler);
+		assertEqual(2, handler.start_tags);
+		assertEqual(2, handler.end_tags);
+
+		handler.reset();
+  	    HTMLParser("<div><input></input>aa</div>", handler);
+		assertEqual(2, handler.start_tags);
+		assertEqual(2, handler.end_tags);
+	}},
+  }); 
+</script>
