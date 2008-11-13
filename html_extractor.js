@@ -29,19 +29,19 @@ var html_extractor = function(html)
 	this.html  = html;
 	this.reset();	
 }
-String.prototype.he = function(){return new html_extractor(this);}
+String.prototype.jhe = function(){return new html_extractor(this);}
 /*
  * "<div><div>abc</div></div>".he_im("div", "div");
  * "<div><div id='abc'>abc</div></div>".he_im("div", "div", "@id=123");
  */ 
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，不包括最后一个匹配标签
-String.prototype.he_im = function(tag){return new html_extractor(this).tag(tag).im();}
+String.prototype.jhe_im = function(tag){return new html_extractor(this).tag(tag).im();}
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，包括最后一个匹配标签
-String.prototype.he_om = function(tag){return new html_extractor(this).tag(tag).om();}
+String.prototype.jhe_om = function(tag){return new html_extractor(this).tag(tag).om();}
 //匹配指定标记内的指定属性，tag是个变长参数，attr为要获取的属性的名称
 String.prototype.he_ma = function(attr, tag){return new html_extractor(this).tag(tag).ma();}
 //匹配指定标记内的指定内容，tag是个变长参数，返回结果为匹配内容，不包括任何html标签，只是文本。
-String.prototype.he_mt = function(attr, tag){return new html_extractor(this).tag(tag).ma();}
+String.prototype.jhe_mt = function(attr, tag){return new html_extractor(this).tag(tag).ma();}
 
 //argus could be ["div", "div", "@id=123", "p"]
 function html_extractor_query(html, argus)
@@ -145,7 +145,7 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 
 	handler.prototype = {
 		start:   function (tag, attrs, unary) {
-			tag = tag.toLowerCase();
+			tag = tag.toLowerCase();			
 			if (this._tag_index == 0 && self.tags[0].first != undefined && self.tags[0].first && self.tags[0].tag != tag)						
 			{//检查首匹配
 				this._stop_parse = true;
@@ -205,6 +205,7 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 								 
 								 if (!this.inner)if (this._html_type_result) this._result += get_start_tag(tag, attrs);
 							 }
+							 html_extractor_log("matched:" + tag);
 							 return;
 						}
 					}
@@ -231,6 +232,8 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 		end:     function (tag) {
 						if (this._stop_parse)return;
 			tag = tag.toLowerCase();
+			html_extractor_log("end:" + tag);
+			//html_extractor_log("end:" + tag);			
 			if (this._matched_tags[this._tag_index] != undefined)
 			{//当前处理的标签是已匹配的标签，该标签已经处理结束，将匹配标记为否
 
