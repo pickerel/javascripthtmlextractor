@@ -17,6 +17,14 @@
     
     teardown: function() {
     },
+	
+		testBrockenHtml: function() { with(this) {
+				var html = "<div><p>hello<p id='hello'><input id='input'><p>aa</div>";
+				var jhe = html.jhe();
+				html_extractor_log(HTMLtoXML(html));
+				assertEqual("hello", jhe.tag("div").tag("p").im());		
+		}},
+		/*
 	testEmptyTag: function() { with(this) {
 		    var html = "<div><input id='hello'></div>";
 			var ret = new html_extractor(html).tag("div").tag("input").ma("id");
@@ -107,7 +115,7 @@
 			'</div>';
 			
 		
-		ret = html.he().tag("div").tag("div").attr("id", /div\d*/).im(function(idx, attrs, content)
+		//ret = html.jhe().tag("div").tag("div").attr("id", /div\d*).im(function(idx, attrs, content)
 			{
 				var result = {};
 				var extractor = new html_extractor(content);
@@ -122,8 +130,8 @@
 		assertEqual("list1", ret[0].title);		
 		assertEqual("list2", ret[1].title);		
 
-		assertEqual("item22", ret[1].items[1].he().im());	
-		assertEqual("http://www.sina.com.cn", ret[1].items[1].he().ma("href"));	
+		assertEqual("item22", ret[1].items[1].jhe().im());	
+		assertEqual("http://www.sina.com.cn", ret[1].items[1].jhe().ma("href"));	
 					
 		 
 
@@ -139,6 +147,14 @@
 		assertEqual("<div><div>aaa</div></div>", ret);
 
     }},
+*/
+   testIm: function() { with(this) {
+		//var html = "<div><p>abbc</div>";
+   	    }},
+   testOm: function() { with(this) {
+   	    }},		
+   testMa: function() { with(this) {
+   	    }},		
    testHeIm: function() { with(this) {
    	    }},
    testHeOm: function() { with(this) {
