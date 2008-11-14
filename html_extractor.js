@@ -145,6 +145,8 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 
 	handler.prototype = {
 		start:   function (tag, attrs, unary) {
+				try
+				{
 			tag = tag.toLowerCase();			
 			if (this._tag_index == 0 && self.tags[0].first != undefined && self.tags[0].first && self.tags[0].tag != tag)						
 			{//检查首匹配
@@ -205,7 +207,7 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 								 
 								 if (!this.inner)if (this._html_type_result) this._result += get_start_tag(tag, attrs);
 							 }
-							 html_extractor_log("matched:" + tag);
+							 
 							 return;
 						}
 					}
@@ -227,19 +229,23 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 						break;
 					}
 				}
-			}		
+			}
+			}finally{
+				if (unary)this.end(tag, unary);
+				
+			}
 		},
-		end:     function (tag) {
+		end:     function (tag, unary) {
 						if (this._stop_parse)return;
 			tag = tag.toLowerCase();
 			html_extractor_log("end:" + tag);
-			//html_extractor_log("end:" + tag);			
 			if (this._matched_tags[this._tag_index] != undefined)
 			{//当前处理的标签是已匹配的标签，该标签已经处理结束，将匹配标记为否
 
 				if (this._all_matched)
 				{//如果是全匹配，说明现在是一个全匹配的结束
-					if (!this.inner)if (this._html_type_result)this._result += "</" + tag +">";
+						
+					if (!this.inner && !unary && this._html_type_result)this._result += "</" + tag +">";
 										
 					//全匹配结果置入匹配结果数组中
 					if ( callback != undefined && callback != null)
@@ -254,6 +260,10 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 					this._prev_matched_index = -1;
 					//全匹配置为否
 					this._all_matched = false;
+					
+						//for( var i = 0; i < self.tags.length; i++)this._matched[i] = false;
+						//this._matched_tags.clear();
+						//this._matched_tags_attrs.clear();
 				}
 				this._matched[this._matched_tags[this._tag_index]] = false;
 				this._matched_tags.remove(this._tag_index); 	
@@ -261,7 +271,7 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 			}
 			else if (this._all_matched)
 			{//全匹配后的处理
-				if (this._html_type_result)this._result += "</" + tag +">";
+				if (this._html_type_result && !unary )this._result += "</" + tag +">";
 			}
 
 
@@ -320,6 +330,9 @@ Array.prototype.remove = function(from, to) {
   var rest = this.slice((to || from) + 1 || this.length);
   this.length = from < 0 ? this.length + from : from;
   return this.push.apply(this, rest);
+};
+Array.prototype.clear = function() {
+  this.length = 0;  
 };
 
 
