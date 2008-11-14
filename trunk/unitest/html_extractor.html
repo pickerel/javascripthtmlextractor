@@ -21,10 +21,11 @@
 		testBrockenHtml: function() { with(this) {
 				var html = "<div><p>hello<p id='hello'><input id='input'><p>aa</div>";
 				var jhe = html.jhe();
-				html_extractor_log(HTMLtoXML(html));
-				assertEqual("hello", jhe.tag("div").tag("p").im());		
+				var ret = jhe.tag("div").tag("p").im();
+				assertEqual(3, ret.length);
+				assertEqual("hello", ret[0]);
+				assertEqual('<input id="input">', ret[1]);		
 		}},
-		/*
 	testEmptyTag: function() { with(this) {
 		    var html = "<div><input id='hello'></div>";
 			var ret = new html_extractor(html).tag("div").tag("input").ma("id");
@@ -103,7 +104,7 @@
 	}},
 		
     testMatch: function() { with(this) {
-		var html = "<div><div><div id='aa'><a href='bb'>bb</a>aa</div></div></div>";
+		var html = "<div><div><div id='aa'><a href='bb'>bb</a>aa</div>tt</div>tt</div>";
 		ret = new html_extractor(html).tag("div").tag("div").tag("div").attr("id", "aa").match();
 		assertEqual("<a href=\"bb\">bb</a>aa", ret[0]);
 		ret = new html_extractor(html).tag("div").tag("div").tag("div").attr("id", "aa").match(false);		
@@ -115,7 +116,7 @@
 			'</div>';
 			
 		
-		//ret = html.jhe().tag("div").tag("div").attr("id", /div\d*).im(function(idx, attrs, content)
+		ret = html.jhe().tag("div").tag("div").attr("id", /div\d*/).im(function(idx, attrs, content)
 			{
 				var result = {};
 				var extractor = new html_extractor(content);
@@ -147,7 +148,7 @@
 		assertEqual("<div><div>aaa</div></div>", ret);
 
     }},
-*/
+
    testIm: function() { with(this) {
 		//var html = "<div><p>abbc</div>";
    	    }},
