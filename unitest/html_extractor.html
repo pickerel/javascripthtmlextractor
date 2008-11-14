@@ -150,17 +150,22 @@
     }},
 
    testIm: function() { with(this) {
-		//var html = "<div><p>abbc</div>";
+		var html = "<div><p>abbc</div>";
+		assertEqual("abbc", html.jhe().tag("p").im());
    	    }},
    testOm: function() { with(this) {
+		var html = "<div><p>abbc</div>";
+		assertEqual("<p>abbc</p>", html.jhe().tag("p").om());		
    	    }},		
    testMa: function() { with(this) {
+		var html = "<div><p id='abbc'>abbc</div>";
+		assertEqual("abbc", html.jhe().tag("p").ma('id'));				
    	    }},		
-   testHeIm: function() { with(this) {
+   testJheIm: function() { with(this) {
    	    }},
-   testHeOm: function() { with(this) {
+   testJheOm: function() { with(this) {
    	    }},		
-   testHeMa: function() { with(this) {
+   testJheMa: function() { with(this) {
    	    }},				
   }); 
 </script>
