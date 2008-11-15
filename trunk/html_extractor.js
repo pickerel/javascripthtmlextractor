@@ -35,9 +35,9 @@ String.prototype.jhe = function(){return new html_extractor(this);}
  * "<div><div id='abc'>abc</div></div>".he_im("div", "div", "@id=123");
  */ 
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，不包括最后一个匹配标签
-String.prototype.jhe_im = function(query_params){return html_extractor_query(this, arguments).im();}
+String.prototype.jhe_im = function(query_params){return html_extractor_query(this, arguments).im(html_extractor_query_callback(arguments));}
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，包括最后一个匹配标签
-String.prototype.jhe_om = function(query_params){return html_extractor_query(this, arguments).om();}
+String.prototype.jhe_om = function(query_params){return html_extractor_query(this, arguments).om(html_extractor_query_callback(arguments));}
 //匹配指定标记内的指定属性，tag是个变长参数，attr为要获取的属性的名称
 String.prototype.jhe_ma = function(attr, query_params){
 		var arr = [];
@@ -45,7 +45,7 @@ String.prototype.jhe_ma = function(attr, query_params){
 		return html_extractor_query(this, arr).ma(attr);
 }
 //匹配指定标记内的指定内容，tag是个变长参数，返回结果为匹配内容，不包括任何html标签，只是文本。
-String.prototype.jhe_mt = function(query_params){return html_extractor_query(this, arguments).mt();}
+String.prototype.jhe_mt = function(query_params){return html_extractor_query(this, arguments).mt(html_extractor_query_callback(arguments));}
 
 /*允许参数argus：
 1.标准的html标签，相当于执行tag()
@@ -59,6 +59,7 @@ function html_extractor_query(html, argus)
 	for(var i = 0; i < argus.length; i++)
 	{
 		var argu = argus[i];
+		if (typeof argu != 'string')continue;
 		switch(argu.substring(0, 1))
 		{
 				case '^':
@@ -79,6 +80,13 @@ function html_extractor_query(html, argus)
 		}		
 	}
 	return extractor;
+}
+function html_extractor_query_callback(argus)
+{
+		var f = argus[argus.length - 1];
+		if (typeof f == 'function')
+				return f;
+		return null;
 }
 //预设一个tag查询条件，指定的html文档的起始tag必须与该tag匹配
 html_extractor.prototype.first_tag = function(tag, callback)
