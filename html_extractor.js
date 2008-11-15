@@ -39,9 +39,13 @@ String.prototype.jhe_im = function(query_params){return html_extractor_query(thi
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，包括最后一个匹配标签
 String.prototype.jhe_om = function(query_params){return html_extractor_query(this, arguments).om();}
 //匹配指定标记内的指定属性，tag是个变长参数，attr为要获取的属性的名称
-String.prototype.jhe_ma = function(attr, tag){return html_extractor_query(this, arguments).ma(attr);}
+String.prototype.jhe_ma = function(attr, query_params){
+		var arr = [];
+		for(var i = 1; i < arguments.length; i++){arr.push(arguments[i]);}
+		return html_extractor_query(this, arr).ma(attr);
+}
 //匹配指定标记内的指定内容，tag是个变长参数，返回结果为匹配内容，不包括任何html标签，只是文本。
-String.prototype.jhe_mt = function(attr, tag){return html_extractor_query(this, arguments).mt();}
+String.prototype.jhe_mt = function(query_params){return html_extractor_query(this, arguments).mt();}
 
 /*允许参数argus：
 1.标准的html标签，相当于执行tag()
@@ -330,7 +334,6 @@ function get_start_tag(tag, attrs)
 	ret += ">";
 	return ret;
 }
-
 function html_extractor_log(message) {
 	if (!__HTML_EXTRACTOR_DEBUG__)return;
     if (!html_extractor_log.window_ || html_extractor_log.window_.closed) {
