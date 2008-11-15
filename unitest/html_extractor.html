@@ -195,8 +195,12 @@
 				assertEqual(0, ret.length);															
 		}},		
 	testJheIm: function() { with(this) {
-		var html = "<div><p>abbc</div><div id=11><p>11</div>";
-		assertEqual("11", html.jhe_im("div", "@id=11", "p"));		
+		var html = "<div><p>abbc</div><div id=11><p><b>11</b></div>";
+		assertEqual("<b>11</b>", html.jhe_im("div", "@id=11", "p"));
+		var ret = html.jhe_im("div", "@id=11", "p", function(idx, attrs, content){
+				return "<i>" + content + "</i>";
+				});
+		assertEqual('<i><b>11</b></i>', ret);
 		}},
 	testJheOm: function() { with(this) {
 		var html = "<div><p>abbc</div><div id=11><p>11</div>";
