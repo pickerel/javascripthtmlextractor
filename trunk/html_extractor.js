@@ -39,10 +39,10 @@ String.prototype.jhe_im = function(query_params){return html_extractor_query(thi
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，包括最后一个匹配标签
 String.prototype.jhe_om = function(query_params){return html_extractor_query(this, arguments).om(html_extractor_query_callback(arguments));}
 //匹配指定标记内的指定属性，tag是个变长参数，attr为要获取的属性的名称
-String.prototype.jhe_ma = function(attr, query_params){
+String.prototype.jhe_ma = function( query_params){
 		var arr = [];
-		for(var i = 1; i < arguments.length; i++){arr.push(arguments[i]);}
-		return html_extractor_query(this, arr).ma(attr);
+		for(var i = 0; i < arguments.length - 1; i++){arr.push(arguments[i]);}
+		return html_extractor_query(this, arr).ma(arguments[arguments.length -  1]);
 }
 //匹配指定标记内的指定内容，tag是个变长参数，返回结果为匹配内容，不包括任何html标签，只是文本。
 String.prototype.jhe_mt = function(query_params){return html_extractor_query(this, arguments).mt(html_extractor_query_callback(arguments));}
@@ -398,9 +398,9 @@ Array.prototype.clear = function() {
 (function(){
 
 	// Regular Expressions for parsing tags and attributes
-	var startTag = /^<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/,
+	var startTag = /^<(\w+)((?:\s+[\w\-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/,
 		endTag = /^<\/(\w+)[^>]*>/,
-		attr = /(\w+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g;
+		attr = /([\w\-]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g;
 		
 	// Empty Elements - HTML 4.01
 	var empty = makeMap("area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed");
@@ -433,9 +433,11 @@ Array.prototype.clear = function() {
 			// Make sure we're not in a script or style element
 			if ( !stack.last() || !special[ stack.last() ] ) {
 
-				// Comment
-				if ( html.indexOf("<!--") == 0 ) {
-					index = html.indexOf("-->");
+				// Comment, DOCTYPE INCLUDED
+				//if ( html.indexOf("<!--") == 0 ) {
+				//	index = html.indexOf("-->");
+				if ( html.indexOf("<!") == 0 ) {
+					index = html.indexOf(">");
 	
 					if ( index >= 0 ) {
 						if ( handler.comment )
