@@ -17,7 +17,14 @@
     
     teardown: function() {
     },
-	
+
+	testNextTag2: function() { with(this) {
+				var html  = "<div><span>11</span><span>12</span></div><div><span>11</span><span>12</span></div>";
+				var ret = html.jhe().tag("div").next_tag("span").im();
+				assertEqual(2, ret.length);
+				var ret = html.jhe().tag("div").tag("span").im();
+				assertEqual(4, ret.length);				
+		}},
 		testBrockenHtml: function() { with(this) {
 				var html = "<div><p>hello<p id='hello'><input id='input'><p>aa</div>";
 				var jhe = html.jhe();
@@ -38,7 +45,7 @@
 			assertEqual("<p>text</p>", ret[0], "test2");
 		}},
 	testMatchByAttr: function() { with(this) {
-			var html = '<div class="t1"><a href="http://www.sina.com.cn">sina</a></div><div class="t1"><a href="http://www.google.cn">google</a></div>';
+			var html = '<div class="t1"><a href="http://www.sina.com.cn">sina</a></div><div id=11 class="t1"><a href="http://www.google.cn">google</a></div>';
 			var ret = new html_extractor(html).attr("class", "t1").tag("a").match();			
 			assertEqual(2, ret.length);
 			assertEqual("sina", ret[0]);
@@ -48,6 +55,10 @@
 			assertEqual(2, ret.length);
 			assertEqual("sina", ret[0]);
 			assertEqual("google", ret[1]);
+			
+			var ret = new html_extractor(html).tag("*").attr("class", "t1").attr("id", "11").tag("a").match();			
+			assertEqual(1, ret.length);
+			assertEqual("google", ret[0]);			
 						
 			
 		}},
@@ -154,18 +165,50 @@
 		assertEqual("abbc", html.jhe().tag("p").im());
    	    }},
    testOm: function() { with(this) {
-		var html = "<div><p>abbc</div>";
-		assertEqual("<p>abbc</p>", html.jhe().tag("p").om());		
+		var html = "<div><p>abbc</div><div id=11><p>11</div>";
+		assertEqual("<p>11</p>", html.jhe().tag("div").attr("id", "11").tag("p").om());		
    	    }},		
    testMa: function() { with(this) {
-		var html = "<div><p id='abbc'>abbc</div>";
-		assertEqual("abbc", html.jhe().tag("p").ma('id'));				
-   	    }},		
-   testJheIm: function() { with(this) {
+		var html = "<div><p id='abbc'>abbc</div><div><p id='11'>11</div>";
+		assertEqual(2, html.jhe().tag("p").ma('id').length);				
    	    }},
-   testJheOm: function() { with(this) {
-   	    }},		
-   testJheMa: function() { with(this) {
-   	    }},				
+   testMt: function() { with(this) {
+		var html = "<div><p id='abbc'>abbc</div><div><p id='11'>11</div>";
+		assertEqual('11', html.jhe().tag("p").attr('id', '11').mt());				
+   	    }},			
+	testExtractQuery: function() { with(this) {
+				var html = "<body><div class='11'>11</div><div class='12'>12</div></body>";
+				var match = function match(params){
+						return html_extractor_query(html, arguments).im();											
+				};
+				var ret = match('body', 'div');
+				assertEqual(2, ret.length);
+				ret = match('body', '>div');
+				assertEqual(11, ret[0]);								
+				ret = match('div', '@class=12');
+				assertEqual(12, ret[0]);
+				ret = match("*", 'div', '@class=12');
+				assertEqual(12, ret[0]);
+				ret = match("^body", 'div', '@class=12');
+				assertEqual(12, ret[0]);
+				ret = match('^div', '@class=12');
+				assertEqual(0, ret.length);															
+		}},		
+	testJheIm: function() { with(this) {
+		var html = "<div><p>abbc</div><div id=11><p>11</div>";
+		assertEqual("11", html.jhe_im("div", "@id=11", "p"));		
+		}},
+	testJheOm: function() { with(this) {
+		var html = "<div><p>abbc</div><div id=11><p>11</div>";
+		assertEqual("<p>11</p>", html.jhe_om("div", "@id=11", "p"));		
+		}},
+	testJheMa: function() { with(this) {
+		var html = "<div><p id='abbc'>abbc</div><div><p id='11'>11</div>";
+		assertEqual(2, html.jhe_ma("id", "p").length);				
+		}},
+	testJheMt: function() { with(this) {
+				var html = "<div><p id='abbc'>abbc</div><div><p id='11'>11</div>";
+				assertEqual('abbc', html.jhe_mt("div", ">p", "@id=abbc"));						
+		}},				
   }); 
 </script>
