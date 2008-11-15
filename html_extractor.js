@@ -35,23 +35,46 @@ String.prototype.jhe = function(){return new html_extractor(this);}
  * "<div><div id='abc'>abc</div></div>".he_im("div", "div", "@id=123");
  */ 
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，不包括最后一个匹配标签
-String.prototype.jhe_im = function(tag){return new html_extractor(this).tag(tag).im();}
+String.prototype.jhe_im = function(query_params){return html_extractor_query(this, arguments).im();}
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，包括最后一个匹配标签
-String.prototype.jhe_om = function(tag){return new html_extractor(this).tag(tag).om();}
+String.prototype.jhe_om = function(query_params){return html_extractor_query(this, arguments).om();}
 //匹配指定标记内的指定属性，tag是个变长参数，attr为要获取的属性的名称
-String.prototype.he_ma = function(attr, tag){return new html_extractor(this).tag(tag).ma();}
+String.prototype.jhe_ma = function(attr, tag){return html_extractor_query(this, arguments).ma(attr);}
 //匹配指定标记内的指定内容，tag是个变长参数，返回结果为匹配内容，不包括任何html标签，只是文本。
-String.prototype.jhe_mt = function(attr, tag){return new html_extractor(this).tag(tag).ma();}
+String.prototype.jhe_mt = function(attr, tag){return html_extractor_query(this, arguments).mt();}
 
-//argus could be ["div", "div", "@id=123", "p"]
+/*允许参数argus：
+1.标准的html标签，相当于执行tag()
+2.^+标准的html标签，执行first_tag()
+3.>+标准的html标签，执行next_tag()
+4.@+属性表达式，相当于执行attr，例如@id=123，相当于执行attr("id", "123")
+*/
 function html_extractor_query(html, argus)
 {
 	var extractor = new html_extractor(html);
-	for(var i = 0; i < argus.lenght; i++)
+	for(var i = 0; i < argus.length; i++)
 	{
 		var argu = argus[i];
-		//if (argu)
+		switch(argu.substring(0, 1))
+		{
+				case '^':
+						extractor.first_tag(argu.substring(1));
+						break;
+				case '>':
+						extractor.next_tag(argu.substring(1));						
+						break;
+				case '@':
+						var exp = argu.substring(1);
+						var pos = exp.indexOf("=");
+				
+						extractor.attr(exp.substring(0, pos), exp.substring(pos+1));												
+						break;
+				default:
+						extractor.tag(argu);										
+						break;
+		}		
 	}
+	return extractor;
 }
 //预设一个tag查询条件，指定的html文档的起始tag必须与该tag匹配
 html_extractor.prototype.first_tag = function(tag, callback)
@@ -238,7 +261,7 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 		end:     function (tag, unary) {
 						if (this._stop_parse)return;
 			tag = tag.toLowerCase();
-			html_extractor_log("end:" + tag);
+
 			if (this._matched_tags[this._tag_index] != undefined)
 			{//当前处理的标签是已匹配的标签，该标签已经处理结束，将匹配标记为否
 
