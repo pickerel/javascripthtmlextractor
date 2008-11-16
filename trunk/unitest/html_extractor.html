@@ -206,7 +206,9 @@
 				ret = match("^body", 'div', '@class=12');
 				assertEqual(12, ret[0]);
 				ret = match('^div', '@class=12');
-				assertEqual(0, ret.length);															
+				assertEqual(0, ret.length);
+				ret = match('div', '@@class=[12]{2}');
+				assertEqual(2, ret.length);
 		}},		
 	testJheIm: function() { with(this) {
 		var html = "<div><p>abbc</div><div id=11><p><b>11</b></div>";
