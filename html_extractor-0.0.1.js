@@ -31,10 +31,7 @@ var html_extractor = function(html)
 	this.reset();	
 }
 String.prototype.jhe = function(){return new html_extractor(this);}
-/*
- * "<div><div>abc</div></div>".he_im("div", "div");
- * "<div><div id='abc'>abc</div></div>".he_im("div", "div", "@id=123");
- */ 
+
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，不包括最后一个匹配标签
 String.prototype.jhe_im = function(query_params){return html_extractor_query(this, arguments).im(html_extractor_query_callback(arguments));}
 //匹配指定标记内的内容，tag是个变长参数，返回结果为匹配内容，包括最后一个匹配标签
