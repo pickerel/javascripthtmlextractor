@@ -320,6 +320,12 @@ html_extractor.prototype._match = function(_html_type_result, inner, callback)
 				this._result += s;
 			}
 		},
+		script:	function (s) {
+						if (this._stop_parse)return; 
+			if (this._all_matched) {
+				this._result += s;
+			}
+		},
 		comment:		function (s) {}
 	};
 
@@ -434,10 +440,8 @@ Array.prototype.clear = function() {
 			if ( !stack.last() || !special[ stack.last() ] ) {
 
 				// Comment, DOCTYPE INCLUDED
-				//if ( html.indexOf("<!--") == 0 ) {
-				//	index = html.indexOf("-->");
-				if ( html.indexOf("<!") == 0 ) {
-					index = html.indexOf(">");
+				if ( html.indexOf("<!--") == 0 ) {
+					index = html.indexOf("-->");
 	
 					if ( index >= 0 ) {
 						if ( handler.comment )
@@ -445,7 +449,34 @@ Array.prototype.clear = function() {
 						html = html.substring( index + 3 );
 						chars = false;
 					}
+					//doctype
+				}else if ( html.indexOf("<!") == 0 ) {
+					index = html.indexOf(">");
 	
+					if ( index >= 0 ) {
+						if ( handler.doctype )
+							handler.doctype( html.substring( 2, index ) );
+						html = html.substring( index + 1);
+						chars = false;
+					}
+				//script
+				}else if ( html.indexOf("<script>") == 0 ) {
+					index = html.indexOf("</script>");
+					if ( index >= 0 ) {
+						if ( handler.script )
+							handler.script( html.substring( 8, index ) );
+						html = html.substring( index + 9);
+						chars = false;
+					}
+				//style
+				}else if ( html.indexOf("<style>") == 0 ) {
+					index = html.indexOf("</style>");
+					if ( index >= 0 ) {
+						if ( handler.style )
+							handler.style( html.substring( 7, index ) );
+						html = html.substring( index + 8);
+						chars = false;
+					}						
 				// end tag
 				} else if ( html.indexOf("</") == 0 ) {
 					match = html.match( endTag );
@@ -455,7 +486,6 @@ Array.prototype.clear = function() {
 						match[0].replace( endTag, parseEndTag );
 						chars = false;
 					}
-	
 				// start tag
 				} else if ( html.indexOf("<") == 0 ) {
 					match = html.match( startTag );
@@ -484,7 +514,6 @@ Array.prototype.clear = function() {
 
 					if ( handler.chars )
 						handler.chars( text );
-
 					return "";
 				});
 
