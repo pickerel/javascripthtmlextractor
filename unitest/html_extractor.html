@@ -17,13 +17,22 @@
     
     teardown: function() {
     },
-
+    testMatchScript: function() { with(this) {
+		var html = '<head><script>alert("hello");<\/script></head>';
+		var ret = html.jhe().tag("head").im();
+		assertEqual('alert("hello");', ret);
+	}},	
 	testNextTag2: function() { with(this) {
 				var html  = "<div><span>11</span><span>12</span></div><div><span>11</span><span>12</span></div>";
 				var ret = html.jhe().tag("div").next_tag("span").im();
 				assertEqual(2, ret.length);
 				var ret = html.jhe().tag("div").tag("span").im();
-				assertEqual(4, ret.length);				
+				assertEqual(4, ret.length);
+				
+				var html  = "<ol><!--mm--><li class=g><h2>11</h2></li><li  class=g>12</li></ol>";
+				var ret = html.jhe().tag("ol").next_tag("li").attr("class", "g").im();
+				assertEqual(1, ret.length);
+				assertEqual('<h2>11</h2>', ret[0]);
 		}},
 		testBrockenHtml: function() { with(this) {
 				var html = "<div><p>hello<p id='hello'><input id='input'><p>aa</div>";
@@ -182,7 +191,7 @@
 		assertEqual('11', html.jhe().tag("p").attr('id', '11').mt());				
    	    }},			
 	testExtractQuery: function() { with(this) {
-				var html = "<body><div class='11'>11</div><div class='12'>12</div></body>";
+				var html = "<body><!--m--><div class='11'>11</div><div class='12'>12</div></body>";
 				var match = function match(params){
 						return html_extractor_query(html, arguments).im();											
 				};
