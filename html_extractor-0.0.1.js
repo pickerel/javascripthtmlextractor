@@ -69,8 +69,10 @@ function html_extractor_query(html, argus)
 				case '@':
 						var exp = argu.substring(1);
 						var pos = exp.indexOf("=");
-				
-						extractor.attr(exp.substring(0, pos), exp.substring(pos+1));												
+						if (exp.substring(0, 1) == "@")
+							extractor.attr(exp.substring(1, pos), new RegExp(exp.substring(pos+1)));																		
+						else
+							extractor.attr(exp.substring(0, pos), exp.substring(pos+1));												
 						break;
 				default:
 						extractor.tag(argu);										
