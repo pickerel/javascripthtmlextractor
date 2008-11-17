@@ -460,11 +460,11 @@ Array.prototype.clear = function() {
 						chars = false;
 					}
 				//script
-				}else if ( html.indexOf("<script>") == 0 ) {
+				}else if ( html.indexOf("<script") == 0 ) {
 					index = html.indexOf("</script>");
 					if ( index >= 0 ) {
 						if ( handler.script )
-							handler.script( html.substring( 8, index ) );
+							handler.script( html.substring( 7, index ) );
 						html = html.substring( index + 9);
 						chars = false;
 					}
